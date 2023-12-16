@@ -13,11 +13,12 @@ def find_links(response, url):
 
 def main():
     try:
-        url = 'https://tululu.org/l55/'
-        response = requests.get(url)
-        response.raise_for_status()
-        links = find_links(response, url)
-        print(links)
+        for page in range(1, 11):
+            url = f'https://tululu.org/l55/{page}/'
+            response = requests.get(url)
+            response.raise_for_status()
+            links = find_links(response, url)
+            print(links)
     except requests.HTTPError:
         print('HTTP error occurred')
     except requests.ConnectionError:
