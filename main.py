@@ -26,7 +26,7 @@ def download_picture(count, book_cover_url, book_url):
         file.write(response.content)
 
 
-def download_book(count, book_title, id):
+def download_book(count, book_title, book_folder, id):
     payloads = {
             'id': id
         }
@@ -35,18 +35,9 @@ def download_book(count, book_title, id):
     book_response.raise_for_status()
     check_for_redirect(book_response)
     book_name = f"{book_title}.txt"
-    book_folder = 'books'
     Path(book_folder).mkdir(exist_ok=True)
     with open(os.path.join(book_folder, f'{count}.{book_name}'), 'wb') as file:
         file.write(book_response.content)
-
-
-def download_comments(count, comments):
-    comment_folder = 'comments'
-    Path(comment_folder).mkdir(exist_ok=True)
-    with open(os.path.join(comment_folder, f'{count}.txt'), 'a', encoding='utf-8') as file:
-        for comment in comments:
-            file.write(f'{comment}\n')
 
 
 def parse_book_page(response):
@@ -70,9 +61,15 @@ def main():
                                      Для начала работы желательно выбрать с какой страницы(start_page) по какую страницу(end_page) скачивать книги''')
     parser.add_argument('--start_page', type=int, default=700, help='Номер первой страницы')
     parser.add_argument('--end_page', type=int, default=702, help='Номер второй страницы')
+    parser.add_argument('--dest_folder', default='books', help='Путь к каталогу с результатами парсинга: картинкам, книгам, JSON')
+    parser.add_argument('--skip_imgs', action='store_true', help='Выбрав этот параметр Вы подтверждаете отказ от скачивания картинок')
+    parser.add_argument('--skip_txt', action='store_true', help='Выбрав этот параметр Вы подтверждаете отказ от скачивания книг')
     args = parser.parse_args()
     start_page = args.start_page
     end_page = args.end_page
+    skip_imgs = args.skip_imgs
+    skip_txt = args.skip_txt
+    dest_folder = args.dest_folder
     count = 0
     books = []
     for page in range(start_page, end_page):  
@@ -91,10 +88,10 @@ def main():
                 check_for_redirect(response)
                 book = parse_book_page(response)
                 books.append(book)
-                download_book(count, book['book_title'], re.findall(r'\d+', id)[0])
-                download_picture(count, book['book_cover_url'], link)
-                if book['comments_on_book']:
-                    download_comments(count, book['comments_on_book'])
+                if not skip_txt:
+                    download_book(count, book['book_title'], dest_folder, re.findall(r'\d+', id)[0])
+                if not skip_imgs:
+                    download_picture(count, book['book_cover_url'], link)
             except requests.HTTPError:
                 print('HTTP error occurred')
             except requests.ConnectionError:
