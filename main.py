@@ -66,17 +66,16 @@ def parse_book_page(response):
 
 
 def main():
-    # parser = argparse.ArgumentParser(description='''Программа позволяет скачать книги, их обложки и комментарии с сайта https://tululu.org/.
-    #                                  Для начала работы желательно выбрать с какого(start_id) по какой(end_id) ID скачивать книги''')
-    # parser.add_argument('--start_id', type=int, default=10, help='ID первой книги')
-    # parser.add_argument('--end_id', type=int, default=25, help='ID второй книги')
-    # args = parser.parse_args()
-    # start_id = args.start_id
-    # end_id = args.end_id
-    # for count in range(start_id, end_id):
+    parser = argparse.ArgumentParser(description='''Программа позволяет скачать книги, их обложки и комментарии с сайта https://tululu.org/.
+                                     Для начала работы желательно выбрать с какой страницы(start_page) по какую страницу(end_page) скачивать книги''')
+    parser.add_argument('--start_page', type=int, default=700, help='Номер первой страницы')
+    parser.add_argument('--end_page', type=int, default=702, help='Номер второй страницы')
+    args = parser.parse_args()
+    start_page = args.start_page
+    end_page = args.end_page
     count = 0
     books = []
-    for page in range(1, 3):  
+    for page in range(start_page, end_page):  
         url = f'https://tululu.org/l55/{page}/'
         response = requests.get(url)
         response.raise_for_status()
