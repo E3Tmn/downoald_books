@@ -51,13 +51,13 @@ def download_comments(count, comments):
 
 def parse_book_page(response):
     soup = BeautifulSoup(response.text, 'lxml')
-    title_tag = soup.find('head').find('title')
+    title_tag = soup.select_one('head title')
     title_text = title_tag.text.split(' - ')
-    genre_tag = soup.find('span', class_='d_book').find('a')
+    genre_tag = soup.select_one('span.d_book a')
     genre = genre_tag['title'].split(' - ')[0]
-    picture_url = soup.find('div', class_='bookimage').find('a').find('img')['src']
-    comments_tag = soup.find_all('div', class_='texts')
-    comments = [comment.find('span', class_='black').text for comment in comments_tag]
+    picture_url = soup.select_one('div .bookimage a img')['src']
+    comments_tag = soup.select('div .texts')
+    comments = [comment.select_one('span.black').text for comment in comments_tag]
     return {'book_title': sanitize_filename(title_text[0]),
             'book_author': title_text[1].split(',')[0],
             'book_genre': genre,
@@ -81,9 +81,9 @@ def main():
         response = requests.get(url)
         response.raise_for_status()
         soap = BeautifulSoup(response.text, 'lxml')
-        href_tags = soap.find_all(class_='d_book')
+        href_tags = soap.select('.d_book')
         for tag in href_tags:
-            id = tag.find('a')['href']
+            id = tag.select_one('a')['href']
             count +=1
             link = urljoin(url, id)
             try:      
