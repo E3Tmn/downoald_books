@@ -59,7 +59,7 @@ def parse_book_page(response):
 def main():
     parser = argparse.ArgumentParser(description='''Программа позволяет скачать книги, их обложки и комментарии с сайта https://tululu.org/.
                                      Для начала работы желательно выбрать с какой страницы(start_page) по какую страницу(end_page) скачивать книги''')
-    parser.add_argument('--start_page', type=int, default=700, help='Номер первой страницы')
+    parser.add_argument('--start_page', type=int, default=1, help='Номер первой страницы')
     parser.add_argument('--end_page', type=int, default=702, help='Номер второй страницы')
     parser.add_argument('--dest_folder', default='books', help='Путь к каталогу с результатами парсинга: картинкам, книгам, JSON')
     parser.add_argument('--skip_imgs', action='store_true', help='Выбрав этот параметр Вы подтверждаете отказ от скачивания картинок')
@@ -72,34 +72,34 @@ def main():
     dest_folder = args.dest_folder
     count = 0
     books = []
-    for page in range(start_page, end_page):  
-        url = f'https://tululu.org/l55/{page}/'
-        response = requests.get(url)
-        response.raise_for_status()
-        soap = BeautifulSoup(response.text, 'lxml')
-        href_tags = soap.select('.d_book')
-        for tag in href_tags:
-            id = tag.select_one('a')['href']
-            count +=1
-            link = urljoin(url, id)
-            try:      
+    try:
+        for page in range(start_page, end_page):  
+            url = f'https://tululu.org/l55/{page}/'
+            response = requests.get(url)
+            response.raise_for_status()
+            check_for_redirect(response)
+            soap = BeautifulSoup(response.text, 'lxml')
+            href_tags = soap.select('.d_book')
+            for tag in href_tags:
+                book_link = tag.select_one('a')['href']
+                count +=1
+                link = urljoin(url, book_link)    
                 response = requests.get(link)
                 response.raise_for_status()
                 check_for_redirect(response)
                 book = parse_book_page(response)
                 books.append(book)
                 if not skip_txt:
-                    download_book(count, book['book_title'], dest_folder, re.findall(r'\d+', id)[0])
+                    download_book(count, book['book_title'], dest_folder, re.findall(r'\d+', book_link)[0])
                 if not skip_imgs:
                     download_picture(count, book['book_cover_url'], link)
-            except requests.HTTPError:
-                print('HTTP error occurred')
-            except requests.ConnectionError:
-                print('Connection is interrupted')
-                time.sleep(300)
-    books_json = json.dumps(books, ensure_ascii=False)
+    except requests.HTTPError:
+        print('HTTP error occurred')
+    except requests.ConnectionError:
+        print('Connection is interrupted')
+        time.sleep(300)
     with open('books_json', "w", encoding='utf-8') as file:
-        file.write(books_json)
+        file.write(json.dumps(books, ensure_ascii=False))
 
 if __name__ == "__main__":
     main()
