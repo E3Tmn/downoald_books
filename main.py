@@ -59,7 +59,7 @@ def parse_book_page(response):
 def main():
     parser = argparse.ArgumentParser(description='''Программа позволяет скачать книги, их обложки и комментарии с сайта https://tululu.org/.
                                      Для начала работы желательно выбрать с какой страницы(start_page) по какую страницу(end_page) скачивать книги''')
-    parser.add_argument('--start_page', type=int, default=1, help='Номер первой страницы')
+    parser.add_argument('--start_page', type=int, default=690, help='Номер первой страницы')
     parser.add_argument('--end_page', type=int, default=702, help='Номер второй страницы')
     parser.add_argument('--dest_folder', default='books', help='Путь к каталогу с результатами парсинга: картинкам, книгам, JSON')
     parser.add_argument('--skip_imgs', action='store_true', help='Выбрав этот параметр Вы подтверждаете отказ от скачивания картинок')
@@ -72,8 +72,8 @@ def main():
     dest_folder = args.dest_folder
     count = 0
     books = []
-    try:
-        for page in range(start_page, end_page):  
+    for page in range(start_page, end_page):  
+        try:
             url = f'https://tululu.org/l55/{page}/'
             response = requests.get(url)
             response.raise_for_status()
@@ -93,11 +93,11 @@ def main():
                     download_book(count, book['book_title'], dest_folder, re.findall(r'\d+', book_link)[0])
                 if not skip_imgs:
                     download_picture(count, book['book_cover_url'], link)
-    except requests.HTTPError:
-        print('HTTP error occurred')
-    except requests.ConnectionError:
-        print('Connection is interrupted')
-        time.sleep(300)
+        except requests.HTTPError:
+            print('HTTP error occurred')
+        except requests.ConnectionError:
+            print('Connection is interrupted')
+            time.sleep(300)
     with open('books_json', "w", encoding='utf-8') as file:
         file.write(json.dumps(books, ensure_ascii=False))
 
