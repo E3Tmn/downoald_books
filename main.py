@@ -98,6 +98,7 @@ def main():
                     print('HTTP error occurred')
                 except requests.ConnectionError:
                     print('Connection is interrupted')
+                    time.sleep(300)
         except requests.HTTPError:
             print('HTTP error occurred')
         except requests.ConnectionError:
