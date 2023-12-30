@@ -64,7 +64,7 @@ def main():
     parser = argparse.ArgumentParser(description='''Программа позволяет скачать книги, их обложки и комментарии с сайта https://tululu.org/.
                                      Для начала работы желательно выбрать с какой страницы(start_page) по какую страницу(end_page) скачивать книги''')
     parser.add_argument('--start_page', type=int, default=1, help='Номер первой страницы')
-    parser.add_argument('--end_page', type=int, default=2, help='Номер второй страницы')
+    parser.add_argument('--end_page', type=int, default=10, help='Номер второй страницы')
     parser.add_argument('--dest_folder', default='books', help='Путь к каталогу с результатами парсинга: картинкам, книгам, JSON')
     parser.add_argument('--skip_imgs', action='store_true', help='Выбрав этот параметр Вы подтверждаете отказ от скачивания картинок')
     parser.add_argument('--skip_txt', action='store_true', help='Выбрав этот параметр Вы подтверждаете отказ от скачивания книг')
