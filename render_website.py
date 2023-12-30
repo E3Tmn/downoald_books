@@ -19,7 +19,9 @@ def on_reload():
     name_folder = 'pages'
     for num, books in enumerate(chunked_books):  
         rendered_page = template.render(
-            books=list(chunked(books, 2))
+            books=list(chunked(books, 2)),
+            page_number = num,
+            page_amount=len(chunked_books)
         )
         Path(name_folder).mkdir(exist_ok=True)
         with open(os.path.join(name_folder, f'{num+1}index.html'), 'w', encoding='utf-8') as file:
@@ -29,7 +31,7 @@ def on_reload():
 def main():
     server = Server()
     server.watch('template.html', on_reload)
-    server.serve(root='pages/1index.html')
+    server.serve(root='.')
 
 
 if __name__ == "__main__":
