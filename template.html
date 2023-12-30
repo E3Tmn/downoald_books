@@ -9,7 +9,7 @@
     <title>Document</title>
 </head>
 <body>
-    <nav aria-label="Page navigation">
+    <nav aria-label="Page navigation" style="margin-top: 2%;">
         <ul class="pagination justify-content-center">
             {% if page_number == 0 %}
                 <li class="page-item disabled">
@@ -51,12 +51,13 @@
                       <div class="card mb-3" style="max-width: 540px;">
                           <div class="row no-gutters">
                               <div class="col-md-4">
-                                  <img src='../{{book.image_path}}' class="card-img" alt="{{book.book_genre}}">
+                                  <img src='../{{book.image_path}}' class="card-img" alt="{{book.book_title}}">
                               </div>
                               <div class="col-md-8">
                                   <div class="card-body">
                                       <h5 class="card-title">{{book.book_title}}</h5>
                                       <p class="card-text">{{book.book_author}}</p>
+                                      <div class="card-text"><strong>{{book.book_genre}}</strong></div>
                                       <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                                       <a href="../{{book.book_path}}" target="_blank">Читать</a>
                                   </div>
